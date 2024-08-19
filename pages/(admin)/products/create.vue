@@ -1,16 +1,8 @@
 <script lang="ts" setup>
-	import {
-		type Category,
-		type Country,
-		type Locality,
-		type Product,
-		type ProductDetails,
-		type ProductPrice,
-	} from "@prisma/client";
-	import type { RefSymbol } from "@vue/reactivity";
+	const supabase = useSupabaseClient();
 
 	definePageMeta({ layout: "admin" });
-	const product: creationProduct = reactive({
+	let product: creationProduct = reactive({
 		id: null,
 		nameCz: "",
 		descriptionCz: "",
@@ -32,27 +24,62 @@
 		localityNameEn: "",
 		countryNameCz: "",
 		countryNameEn: "",
+		imagePaths: [],
 	} as creationProduct);
-	const category: Category[] = [
-		{
-			id: 0,
-			nameCz: "Křemen",
-			nameEn: "Silica",
-		},
-		{
-			id: 1,
-			nameCz: "Fostát",
-			nameEn: "Phospathes",
-		},
-		{
-			id: 2,
-			nameCz: "Sulfid",
-			nameEn: "Sulfides",
-		},
-	];
+
+	let images: File[] = [];
+
+	const handleFilesUpdate = (files: File[]) => {
+		console.log("Updated files:", files);
+		images = files;
+	};
+
+	const { data: categories } = await useFetch("/api/category", {
+		method: "GET",
+	});
+
+	const { data: colors } = await useFetch("/api/colors", {
+		method: "GET",
+	});
+
+	const { data: owners } = await useFetch("/api/owner", {
+		method: "GET",
+	});
+
+	const uploadImages = async (): Promise<string[]> => {
+		console.log("Uploading images");
+		console.log(images);
+		const imageUrls: string[] = [];
+
+		for (const file of images) {
+			console.log("uploading file: " + file);
+			const { data, error } = await supabase.storage
+				.from("images")
+				.upload(file.name, file);
+
+			if (error) {
+				console.error("Error uploading image:", error);
+				continue; // Skip this file and continue with the next
+			}
+
+			// Get the public URL for the uploaded image
+			const { data: publicURL } = supabase.storage
+				.from("images")
+				.getPublicUrl(data.path);
+
+			if (publicURL) {
+				imageUrls.push(publicURL.publicUrl);
+			}
+		}
+
+		return imageUrls;
+	};
 
 	const addProduct = async () => {
+		const imageUrls = await uploadImages();
+		product.imagePaths = imageUrls;
 		console.log(product);
+
 		const { data: country } = await useFetch("/api/country", {
 			method: "POST",
 			body: {
@@ -76,7 +103,7 @@
 			},
 		});
 
-		await useFetch("/api/product", {
+		const { data: response } = await useFetch("/api/product", {
 			method: "POST",
 			body: {
 				nameCz: product.nameCz,
@@ -93,24 +120,59 @@
 				depth: product.depth,
 				ownerId: owner.value?.id,
 				localityId: locality.value?.id,
+				price: product.price,
+				imagePaths: product.imagePaths,
+				categories: product.categoryIds,
+				colors: product.colorIds,
 			},
 		});
+		if (response.value?.success == true) {
+			navigateTo("/(admin)/products");
+		}
 	};
+	onMounted(async () => {
+		const route = useRouter().currentRoute.value;
+
+		console.log(route);
+
+		if (route.query.id != null) {
+			console.log("id is not null");
+			const content = await $fetch(`/api/product/edit?id=${route.query.id}`, {
+				method: "GET",
+			});
+			console.log(content);
+			if (content) {
+				console.log("setting product");
+				Object.assign(product, content);
+			}
+		}
+	});
 </script>
 <template>
 	<div class="py-8 px-16 bg-dashboard-text_dark/15 w-full">
 		<h2 class="text-xl font-bold col-span-2">Create Product</h2>
 		<form @submit.prevent="addProduct">
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<DashboardInputGroup title="Description CZ">
-					<DashboardInput
-						type="text"
-						v-model="product.nameCz"
-						label="Name CZ"
-						placeholder="Kámen"
-						:required="true"
-						class="w-6/12"
-					/>
+			<div class="columns-1 md:columns-2 gap-4">
+				<DashboardInputGroup title="Description">
+					<div class="flex justify-between">
+						<DashboardInput
+							type="text"
+							v-model="product.nameCz"
+							label="Name CZ"
+							placeholder="Kámen"
+							:required="true"
+							class="w-5/12"
+						/>
+						<DashboardInput
+							type="text"
+							v-model="product.nameEn!"
+							label="Name EN"
+							placeholder="Stone"
+							:required="true"
+							class="w-5/12"
+						/>
+					</div>
+
 					<DashboardInput
 						type="text"
 						v-model="product.descriptionCz!"
@@ -118,17 +180,7 @@
 						placeholder="Kámen je tvrdá hmota..."
 						:required="true"
 					/>
-				</DashboardInputGroup>
 
-				<DashboardInputGroup title="Description EN">
-					<DashboardInput
-						type="text"
-						v-model="product.nameEn!"
-						label="Name EN"
-						placeholder="Stone"
-						:required="true"
-						class="w-6/12"
-					/>
 					<DashboardInput
 						type="text"
 						v-model="product.descriptionEn!"
@@ -137,28 +189,33 @@
 						:required="true"
 					/>
 				</DashboardInputGroup>
+
 				<DashboardInputGroup title="Price">
 					<DashboardInput
 						type="text"
 						v-model="product.owner"
 						label="Owner"
 						placeholder="Karel"
-						:required="true"
+						:required="false"
 					/>
-					<DashboardInput
-						type="number"
-						v-model="product.bPrice!"
-						label="Buy Price"
-						placeholder="100"
-						:required="true"
-					/>
-					<DashboardInput
-						type="number"
-						v-model="product.price"
-						label="Price"
-						placeholder="100"
-						:required="true"
-					/>
+					<div class="flex justify-between">
+						<DashboardInput
+							type="number"
+							v-model="product.bPrice!"
+							label="Buy Price"
+							placeholder="100"
+							:required="false"
+							class="w-5/12"
+						/>
+						<DashboardInput
+							type="number"
+							v-model="product.price"
+							label="Price"
+							placeholder="100"
+							:required="true"
+							class="w-5/12"
+						/>
+					</div>
 				</DashboardInputGroup>
 				<DashboardInputGroup title="Dimensions">
 					<div class="flex flex-row gap-4">
@@ -193,25 +250,32 @@
 					</div>
 				</DashboardInputGroup>
 
-				<!-- <DashboardInputGroup title="Image">
-				<DashboardImageInput></DashboardImageInput>
-			</DashboardInputGroup> -->
+				<DashboardInputGroup title="Image">
+					<DashboardImageInput
+						@update:files="handleFilesUpdate"
+					></DashboardImageInput>
+				</DashboardInputGroup>
 
 				<DashboardInputGroup title="Location">
-					<DashboardInput
-						type="text"
-						v-model="product.localityNameCz"
-						label="Locality Name CZ"
-						placeholder="Důl"
-						:required="true"
-					/>
-					<DashboardInput
-						type="text"
-						v-model="product.localityNameEn"
-						label="Locality Name EN"
-						placeholder="Mine"
-						:required="true"
-					/>
+					<div class="flex justify-between">
+						<DashboardInput
+							type="text"
+							v-model="product.localityNameCz"
+							label="Locality Name CZ"
+							placeholder="Důl"
+							:required="true"
+							class="w-5/12"
+						/>
+						<DashboardInput
+							type="text"
+							v-model="product.localityNameEn"
+							label="Locality Name EN"
+							placeholder="Mine"
+							:required="true"
+							class="w-5/12"
+						/>
+					</div>
+
 					<DashboardInput
 						type="text"
 						v-model="product.countryNameCz"
@@ -228,29 +292,60 @@
 					/>
 				</DashboardInputGroup>
 				<DashboardInputGroup title="Details">
-					<DashboardInput
-						type="text"
-						v-model="product.note"
-						label="Note"
-						placeholder="Very interesting..."
-						:required="false"
-					/>
-					<DashboardInput
-						type="number"
-						v-model="product.quantity!"
-						label="Quantity"
-						placeholder="0"
-						:required="true"
-					/>
-					<DashboardInput
-						type="checkbox"
-						v-model="product.visible"
-						label="Visible"
-						:required="true"
-					/>
+					<ul class="flex flex-row gap-2">
+						<li v-for="(color, index) in colors">
+							<DashboardColorInput
+								:id="color.id.toString()"
+								:label="color.name"
+								v-model="product.colorIds"
+								:value="color.id"
+								:required="false"
+								:color="color.color"
+							/>
+						</li>
+					</ul>
+					<div class="flex justify-stretch gap-16">
+						<DashboardInput
+							type="text"
+							v-model="product.note"
+							label="Note"
+							placeholder="Very interesting..."
+							:required="false"
+							class="w-7/12"
+						/>
+						<DashboardInput
+							type="number"
+							v-model="product.quantity!"
+							label="Quantity"
+							placeholder="0"
+							:required="true"
+							class="w-1/12"
+						/>
+						<DashboardInput
+							type="checkbox"
+							v-model="product.visible"
+							label="Visible"
+							:required="false"
+							class="w-1/12"
+						/>
+					</div>
 				</DashboardInputGroup>
-				<button type="submit">Submit</button>
+				<DashboardInputGroup title="Category">
+					<ul>
+						<li v-for="(category, index) in categories">
+							<DashboardCategoryInput
+								:id="category.id.toString()"
+								type="checkbox"
+								v-model="product.categoryIds"
+								:value="category.id"
+								:label="category.nameCz + ' | ' + category.nameEn"
+								:required="false"
+							/>
+						</li>
+					</ul>
+				</DashboardInputGroup>
 			</div>
+			<button type="submit">Submit</button>
 		</form>
 	</div>
 </template>

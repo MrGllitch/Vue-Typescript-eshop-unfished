@@ -10,6 +10,7 @@ export interface creationProduct {
 	quantity: number;
 	owner: string;
 	visible: boolean;
+
 	colorIds: number[];
 	categoryIds: number[];
 	weight: number | null;
@@ -20,14 +21,12 @@ export interface creationProduct {
 	localityNameEn: string;
 	countryNameCz: string;
 	countryNameEn: string;
+	imagePaths: string[];
 }
 
-export type ApiResponse<T> = {
-	success: boolean; // Whether the request succeeded
-	data: T | T[] | null; // Can be single object or array of objects, or null if there's no data
-	message?: string; // Optional message for success or failure
-	metadata?: {
-		totalCount?: number; // Optional: total count of items (useful for pagination)
-		otherInfo?: Record<string, any>; // Optional: other metadata as needed
-	};
-};
+export enum SelectType {
+	CATEGORY,
+	STATE,
+	OWNER,
+	LOCALITY,
+}

@@ -2,7 +2,12 @@
 	definePageMeta({
 		layout: "admin",
 	});
+	const seed = async () => {
+		await useFetch("/api/seed");
+	};
 </script>
 <template>
-	<div></div>
+	<div>
+		<button @click="seed">Seed</button>
+	</div>
 </template>

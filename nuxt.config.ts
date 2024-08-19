@@ -3,11 +3,12 @@ export default defineNuxtConfig({
 	compatibilityDate: "2024-04-03",
 	devtools: { enabled: true },
 	modules: [
-		"@prisma/nuxt",
-		"@nuxtjs/tailwindcss",
-		"@nuxtjs/supabase",
-		"@primevue/nuxt-module",
-	],
+        "@prisma/nuxt",
+        "@nuxtjs/tailwindcss",
+        "@nuxtjs/supabase",
+        "@primevue/nuxt-module",
+        "@nuxt/image"
+    ],
 	supabase: {
 		redirect: false,
 	},

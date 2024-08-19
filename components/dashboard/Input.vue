@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-	const model = defineModel<string | number | null | boolean>();
+	const model = defineModel<string | number | number[] | null | boolean>();
 	const props = defineProps<{
 		type?: string;
 		id?: string;
