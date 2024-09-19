@@ -2,14 +2,19 @@ import { Category, Color } from "@prisma/client";
 import prisma from "~/lib/prisma";
 
 const categories: Category[] = [
-	{ id: 1, nameCz: "Achát", nameEn: "Agate" },
-	{ id: 2, nameCz: "Akvamarín", nameEn: "Aquamarine" },
-	{ id: 3, nameCz: "Ametyst", nameEn: "Amethyst" },
-	{ id: 4, nameCz: "Růžový křemen", nameEn: "Rose Quartz" },
-	{ id: 5, nameCz: "Citrín", nameEn: "Citrine" },
-	{ id: 6, nameCz: "Granát", nameEn: "Garnet" },
-	{ id: 7, nameCz: "Malachit", nameEn: "Malachite" },
-	{ id: 8, nameCz: "Opál", nameEn: "Opal" },
+	{ id: 1, nameCz: "Achát", nameEn: "Agate", slug: "agate" },
+	{ id: 2, nameCz: "Akvamarín", nameEn: "Aquamarine", slug: "aquamarine" },
+	{ id: 3, nameCz: "Ametyst", nameEn: "Amethyst", slug: "amethyst" },
+	{
+		id: 4,
+		nameCz: "Růžový křemen",
+		nameEn: "Rose Quartz",
+		slug: "rose_quartz",
+	},
+	{ id: 5, nameCz: "Citrín", nameEn: "Citrine", slug: "citrine" },
+	{ id: 6, nameCz: "Granát", nameEn: "Garnet", slug: "garnet" },
+	{ id: 7, nameCz: "Malachit", nameEn: "Malachite", slug: "malachite" },
+	{ id: 8, nameCz: "Opál", nameEn: "Opal", slug: "opal" },
 ];
 
 const colors: Color[] = [

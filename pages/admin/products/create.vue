@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 	const supabase = useSupabaseClient();
 
-	definePageMeta({ layout: "admin" });
+	definePageMeta({ layout: "admin", middleware: ["auth-admin"] });
 	let product: creationProduct = reactive({
 		id: null,
 		nameCz: "",
@@ -42,7 +42,7 @@
 		method: "GET",
 	});
 
-	const { data: owners } = await useFetch("/api/owner", {
+	let { data: owners } = await useFetch("/api/owner", {
 		method: "GET",
 	});
 
@@ -127,7 +127,7 @@
 			},
 		});
 		if (response.value?.success == true) {
-			navigateTo("/(admin)/products");
+			navigateTo("/products");
 		}
 	};
 	onMounted(async () => {
@@ -147,15 +147,19 @@
 			}
 		}
 	});
+
+	watch(product, (newVal) => {
+		console.log(newVal);
+	});
 </script>
 <template>
 	<div class="py-8 px-16 bg-dashboard-text_dark/15 w-full">
 		<h2 class="text-xl font-bold col-span-2">Create Product</h2>
 		<form @submit.prevent="addProduct">
 			<div class="columns-1 md:columns-2 gap-4">
-				<DashboardInputGroup title="Description">
+				<AdminInputGroup title="Description">
 					<div class="flex justify-between">
-						<DashboardInput
+						<AdminInput
 							type="text"
 							v-model="product.nameCz"
 							label="Name CZ"
@@ -163,7 +167,7 @@
 							:required="true"
 							class="w-5/12"
 						/>
-						<DashboardInput
+						<AdminInput
 							type="text"
 							v-model="product.nameEn!"
 							label="Name EN"
@@ -173,7 +177,7 @@
 						/>
 					</div>
 
-					<DashboardInput
+					<AdminInput
 						type="text"
 						v-model="product.descriptionCz!"
 						label="Description CZ"
@@ -181,25 +185,26 @@
 						:required="true"
 					/>
 
-					<DashboardInput
+					<AdminInput
 						type="text"
 						v-model="product.descriptionEn!"
 						label="Description EN"
 						placeholder="Stone is a hard substance..."
 						:required="true"
 					/>
-				</DashboardInputGroup>
+				</AdminInputGroup>
 
-				<DashboardInputGroup title="Price">
-					<DashboardInput
+				<AdminInputGroup title="Price">
+					<AdminSelectInput
 						type="text"
 						v-model="product.owner"
 						label="Owner"
 						placeholder="Karel"
 						:required="false"
+						:options="owners ? owners.map((owner) => owner.name) : []"
 					/>
 					<div class="flex justify-between">
-						<DashboardInput
+						<AdminInput
 							type="number"
 							v-model="product.bPrice!"
 							label="Buy Price"
@@ -207,7 +212,7 @@
 							:required="false"
 							class="w-5/12"
 						/>
-						<DashboardInput
+						<AdminInput
 							type="number"
 							v-model="product.price"
 							label="Price"
@@ -216,31 +221,31 @@
 							class="w-5/12"
 						/>
 					</div>
-				</DashboardInputGroup>
-				<DashboardInputGroup title="Dimensions">
+				</AdminInputGroup>
+				<AdminInputGroup title="Dimensions">
 					<div class="flex flex-row gap-4">
-						<DashboardInput
+						<AdminInput
 							type="number"
 							v-model="product.weight!"
 							label="Weight (kg)"
 							placeholder="10"
 							:required="true"
 						/>
-						<DashboardInput
+						<AdminInput
 							type="number"
 							v-model="product.height!"
 							label="Height (cm)"
 							placeholder="10"
 							:required="true"
 						/>
-						<DashboardInput
+						<AdminInput
 							type="number"
 							v-model="product.width!"
 							label="Width (cm)"
 							placeholder="10"
 							:required="true"
 						/>
-						<DashboardInput
+						<AdminInput
 							type="number"
 							v-model="product.depth!"
 							label="Depth (cm)"
@@ -248,17 +253,15 @@
 							:required="true"
 						/>
 					</div>
-				</DashboardInputGroup>
+				</AdminInputGroup>
 
-				<DashboardInputGroup title="Image">
-					<DashboardImageInput
-						@update:files="handleFilesUpdate"
-					></DashboardImageInput>
-				</DashboardInputGroup>
+				<AdminInputGroup title="Image">
+					<AdminImageInput @update:files="handleFilesUpdate"></AdminImageInput>
+				</AdminInputGroup>
 
-				<DashboardInputGroup title="Location">
+				<AdminInputGroup title="Location">
 					<div class="flex justify-between">
-						<DashboardInput
+						<AdminInput
 							type="text"
 							v-model="product.localityNameCz"
 							label="Locality Name CZ"
@@ -266,7 +269,7 @@
 							:required="true"
 							class="w-5/12"
 						/>
-						<DashboardInput
+						<AdminInput
 							type="text"
 							v-model="product.localityNameEn"
 							label="Locality Name EN"
@@ -276,25 +279,25 @@
 						/>
 					</div>
 
-					<DashboardInput
+					<AdminInput
 						type="text"
 						v-model="product.countryNameCz"
 						label="State Name CZ"
 						placeholder="Česká republika"
 						:required="true"
 					/>
-					<DashboardInput
+					<AdminInput
 						type="text"
 						v-model="product.countryNameEn"
 						label="State Name EN"
 						placeholder="Czech Republic"
 						:required="true"
 					/>
-				</DashboardInputGroup>
-				<DashboardInputGroup title="Details">
+				</AdminInputGroup>
+				<AdminInputGroup title="Details">
 					<ul class="flex flex-row gap-2">
 						<li v-for="(color, index) in colors">
-							<DashboardColorInput
+							<AdminColorInput
 								:id="color.id.toString()"
 								:label="color.name"
 								v-model="product.colorIds"
@@ -305,7 +308,7 @@
 						</li>
 					</ul>
 					<div class="flex justify-stretch gap-16">
-						<DashboardInput
+						<AdminInput
 							type="text"
 							v-model="product.note"
 							label="Note"
@@ -313,7 +316,7 @@
 							:required="false"
 							class="w-7/12"
 						/>
-						<DashboardInput
+						<AdminInput
 							type="number"
 							v-model="product.quantity!"
 							label="Quantity"
@@ -321,7 +324,7 @@
 							:required="true"
 							class="w-1/12"
 						/>
-						<DashboardInput
+						<AdminInput
 							type="checkbox"
 							v-model="product.visible"
 							label="Visible"
@@ -329,11 +332,11 @@
 							class="w-1/12"
 						/>
 					</div>
-				</DashboardInputGroup>
-				<DashboardInputGroup title="Category">
+				</AdminInputGroup>
+				<AdminInputGroup title="Category">
 					<ul>
 						<li v-for="(category, index) in categories">
-							<DashboardCategoryInput
+							<AdminCategoryInput
 								:id="category.id.toString()"
 								type="checkbox"
 								v-model="product.categoryIds"
@@ -343,7 +346,7 @@
 							/>
 						</li>
 					</ul>
-				</DashboardInputGroup>
+				</AdminInputGroup>
 			</div>
 			<button type="submit">Submit</button>
 		</form>

@@ -1,10 +1,8 @@
 <script setup lang="ts">
-	definePageMeta({ layout: "admin" });
-
 	const { data: products } = await useFetch("/api/product/list", {});
-
+	definePageMeta({ layout: "admin", middleware: ["auth-admin"] });
 	const edit = (id: number) => {
-		navigateTo({ path: "/(admin)/products/create", query: { id } });
+		navigateTo({ path: "/products/create", query: { id } });
 	};
 </script>
 <template>
@@ -13,8 +11,8 @@
 		<div
 			class="flex flex-row content-end border-b border-dashboard-special_gray py-6 px-16"
 		>
-			<DashboardNavigateButton
-				to="/(admin)/products/create"
+			<AdminNavigateButton
+				to="products/create"
 				label="Create Product"
 				icon="mi-add"
 			/>

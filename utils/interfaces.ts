@@ -1,3 +1,5 @@
+import type { Role } from "@prisma/client";
+
 export interface creationProduct {
 	id: number | null;
 	nameCz: string;
@@ -29,4 +31,21 @@ export enum SelectType {
 	STATE,
 	OWNER,
 	LOCALITY,
+}
+
+export interface listProduct {
+	id: number;
+	name: string;
+	price: number;
+	isSale: boolean;
+	isNew: boolean;
+	oldPrice: number;
+	imagePath: string;
+	countryName: string;
+	localityName: string;
+}
+
+export interface User {
+	id: string;
+	role: Role;
 }

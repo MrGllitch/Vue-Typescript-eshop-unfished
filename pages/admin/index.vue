@@ -1,7 +1,6 @@
 <script setup lang="ts">
-	definePageMeta({
-		layout: "admin",
-	});
+	definePageMeta({ layout: "admin", middleware: ["auth-admin"] });
+
 	const seed = async () => {
 		await useFetch("/api/seed");
 	};

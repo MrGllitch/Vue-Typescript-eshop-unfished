@@ -9,7 +9,7 @@
 	}>();
 </script>
 <template>
-	<label :for="props.id" class="mb-2 block text-xs relative text-gray-300">
+	<label :for="props.id" class="mb-2 block text-xs text-gray-300">
 		{{ props.label }}
 		<input
 			:id="props.id"

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 	const route = useRoute();
 	const routes = [
-		{ path: "/dashboard", name: "Dashboard", icon: "mi-layout" },
-		{ path: "/(admin)/orders", name: "Orders", icon: "mi-clipboard-list" },
-		{ path: "/(admin)/products", name: "Products", icon: "mi-tag" },
-		{ path: "/(admin)/accounts", name: "Accounts", icon: "mi-users" },
+		{ path: "/admin", name: "Dashboard", icon: "mi-layout" },
+		{ path: "/admin/orders", name: "Orders", icon: "mi-clipboard-list" },
+		{ path: "/admin/products", name: "Products", icon: "mi-tag" },
+		{ path: "/admin/accounts", name: "Accounts", icon: "mi-users" },
+		{ path: "/", name: "StoreFront", icon: "mi-enter" },
 	];
 </script>
 
