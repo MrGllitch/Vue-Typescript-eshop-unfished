@@ -1,5 +1,6 @@
 import prisma from "~/lib/prisma";
 import { formatResponse } from "~/utils/responseFormatter";
+import { setSessionCookie } from "~/utils/setSessionCookie";
 
 export default defineEventHandler(async (event) => {
 	const token = getCookie(event, "session_token");
@@ -22,8 +23,18 @@ export default defineEventHandler(async (event) => {
 		if (user_session.expires.getTime() - new Date().getTime() <= 0) {
 			return formatResponse(false, null, "Token expired");
 		}
-		//todo restore expiration
 		//todo other checks
+
+		const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+		await prisma.session.update({
+			where: { sessionToken: token },
+			data: {
+				expires,
+			},
+		});
+
+		setSessionCookie(event, token, expires);
 
 		return formatResponse(
 			true,

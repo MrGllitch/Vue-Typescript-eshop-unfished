@@ -49,3 +49,11 @@ export interface User {
 	id: string;
 	role: Role;
 }
+
+export interface Notification {
+	message: string;
+	type: "success" | "error" | "info";
+	duration: number;
+	isVisible: boolean;
+	progress: number;
+}

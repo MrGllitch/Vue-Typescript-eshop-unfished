@@ -1,9 +1,18 @@
-const { setUser } = useUser();
 export default defineNuxtRouteMiddleware(async (to, from) => {
+	const { setUser, isLoggedIn } = useUser();
+	const { addNotification } = useNotification();
+
 	const token = useCookie("session_token");
 
 	if (!token) {
 		return navigateTo({ path: "/auth", query: { redirect: to.fullPath } });
+	}
+	if (!isLoggedIn) {
+		addNotification("Not loged in", "error");
+		return navigateTo({
+			path: "/auth",
+			query: { redirect: to.fullPath },
+		});
 	}
 
 	try {
