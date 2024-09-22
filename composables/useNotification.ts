@@ -36,7 +36,14 @@ const notifications = useState<Notification[]>('notifications', () => []);
 		// }, duration);
 	};
 
+	function removeNotification(notification : Notification){
+		const index = notifications.value.indexOf(notification);
+
+		notifications.value.splice(index, 1);
+	}
+
 	return {
+		removeNotification,
 		notifications,
 		addNotification,
 	};

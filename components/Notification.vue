@@ -1,5 +1,5 @@
 <script setup>
-	const { notifications } = useNotification();
+	const { notifications, removeNotification } = useNotification();
 	watch(notifications, (newVal, oldVal) => {
   console.log("Notifications updated:", newVal);
 }, { deep: true, immediate: true });
@@ -24,7 +24,7 @@
 	>
 		<p>{{ notification.message }}</p>
 		<div>
-		<!-- <button :onclick="removeNotification(notification)">X</button> -->
+		 <button @click="removeNotification(notification)">X</button> 
 	</div>
 	</div> 
 
