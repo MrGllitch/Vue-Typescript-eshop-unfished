@@ -1,7 +1,8 @@
 import type { Notification } from "~/utils/interfaces";
 
 export const useNotification = () => {
-	const notifications = ref<Notification[]>([]);
+const notifications = useState<Notification[]>('notifications', () => []);
+
 
 	const addNotification = (
 		message: string,
@@ -18,21 +19,21 @@ export const useNotification = () => {
 		};
 		notifications.value.push(notification);
 
-		let progressInterval = setInterval(() => {
-			notification.progress -= 100 / (duration / 100);
-			if (notification.progress <= 0) {
-				clearInterval(progressInterval);
-			}
-		}, 100);
+		// let progressInterval = setInterval(() => {
+		// 	notification.progress -= 100 / (duration / 100);
+		// 	if (notification.progress <= 0) {
+		// 		clearInterval(progressInterval);
+		// 	}
+		// }, 100);
 
-		setTimeout(() => {
-			notification.isVisible = false;
-			setTimeout(() => {
-				notifications.value = notifications.value.filter(
-					(n) => n !== notification
-				);
-			}, 500); // Allow time for fade-out transition
-		}, duration);
+		// setTimeout(() => {
+		// 	notification.isVisible = false;
+		// 	setTimeout(() => {
+		// 		notifications.value = notifications.value.filter(
+		// 			(n) => n !== notification
+		// 		);
+		// 	}, 500); // Allow time for fade-out transition
+		// }, duration);
 	};
 
 	return {

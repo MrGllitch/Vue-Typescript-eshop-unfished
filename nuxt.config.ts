@@ -11,7 +11,6 @@ export default defineNuxtConfig({
 		"@prisma/nuxt",
 		"@nuxtjs/tailwindcss",
 		"@primevue/nuxt-module",
-		"@nuxt/image",
 		"nuxt-svgo",
 		"@nuxtjs/supabase",
 	],
