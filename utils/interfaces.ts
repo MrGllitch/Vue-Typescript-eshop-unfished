@@ -54,6 +54,14 @@ export interface Notification {
 	message: string;
 	type: "success" | "error" | "info";
 	duration: number;
-	isVisible: boolean;
-	progress: number;
+}
+
+export interface Address {
+	firstName: string;
+	lastName: string;
+	street: string;
+	houseNumber: string;
+	zip: string;
+	city: string;
+	country: string;
 }

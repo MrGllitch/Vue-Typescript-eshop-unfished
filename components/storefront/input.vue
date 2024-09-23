@@ -6,6 +6,7 @@
 		placeholder?: string;
 		label: string;
 		required?: boolean;
+		error?: string;
 	}>();
 </script>
 <template>
@@ -22,5 +23,8 @@
 			:required="props.required"
 			class="w-full bg-storefront-white border-b-2 mt-2 border-storefront-black text-xl focus:outline-none"
 		/>
+		<span v-if="props.error" class="text-red-500 text-sm">{{
+			props.error
+		}}</span>
 	</label>
 </template>

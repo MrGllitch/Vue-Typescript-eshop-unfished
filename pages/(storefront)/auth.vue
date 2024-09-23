@@ -85,20 +85,20 @@
 				</h2>
 
 				<div class="flex flex-col px-16 mb-8">
-					<StorefrontAuthInput
+					<StorefrontInput
 						v-model="auth.email"
 						label="Email"
 						type="email"
 						required
 					/>
-					<StorefrontAuthInput
+					<StorefrontInput
 						v-model="auth.password"
 						label="Password"
 						type="password"
 						required
 					/>
 
-					<StorefrontAuthInput
+					<StorefrontInput
 						v-if="isRegister"
 						v-model="auth.passwordAgain"
 						label="Confirm Password"

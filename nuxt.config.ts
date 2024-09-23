@@ -12,6 +12,7 @@ export default defineNuxtConfig({
 		"@nuxtjs/tailwindcss",
 		"@primevue/nuxt-module",
 		"nuxt-svgo",
+		"@vee-validate/nuxt",
 		"@nuxtjs/supabase",
 	],
 	prisma: {

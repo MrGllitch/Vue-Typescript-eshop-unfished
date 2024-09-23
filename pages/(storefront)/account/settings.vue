@@ -5,5 +5,7 @@
 	});
 </script>
 <template>
-	<div></div>
+	<div>
+		<StorefrontAccAddressForm />
+	</div>
 </template>
