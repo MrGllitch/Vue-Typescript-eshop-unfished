@@ -2,11 +2,21 @@ import prisma from "~/lib/prisma";
 import bcrypt from "bcrypt";
 import { randomBytes } from "crypto";
 import { formatResponse } from "~/utils/responseFormatter";
-import { User } from "~/utils/interfaces";
 import { setSessionCookie } from "~/utils/setSessionCookie";
+import { loginSchema } from "~/utils/schemas/loginSchema";
 
 export default defineEventHandler(async (event) => {
 	const { email, password } = await readBody(event);
+
+	const validationResult = loginSchema.safeParse({ email, password });
+	if (!validationResult.success) {
+		const errorMessage = validationResult.error.errors[0].message;
+		return sendError(
+			event,
+			createError({ statusCode: 400, message: errorMessage })
+		);
+	}
+
 	try {
 		const user = await prisma.account.findUnique({
 			where: {
@@ -14,7 +24,6 @@ export default defineEventHandler(async (event) => {
 			},
 		});
 
-		// Check if user exists
 		if (!user) {
 			return sendError(
 				event,

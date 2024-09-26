@@ -1,17 +1,30 @@
 import prisma from "~/lib/prisma";
 import bcrypt from "bcrypt";
 import { formatResponse } from "~/utils/responseFormatter";
+import { registerSchema } from "~/utils/schemas/registerSchema";
 
 export default defineEventHandler(async (event) => {
-	const { email, password, name } = await readBody(event);
-
 	try {
-		//if (!email || !password || !name) {
-		//	return sendError(
-		//		event,
-		//		createError({ statusCode: 400, message: "Missing required fields" })
-		//	);
-		//}
+		const body = await readBody(event);
+
+		const result = registerSchema.safeParse(body);
+
+		if (!result.success) {
+			const errors = result.error.errors.map((err) => ({
+				field: err.path[0],
+				message: err.message,
+			}));
+			return sendError(
+				event,
+				createError({
+					statusCode: 400,
+					message: "Validation failed",
+					data: errors,
+				})
+			);
+		}
+
+		const { email, password } = result.data;
 
 		const existingUser = await prisma.account.findUnique({
 			where: { email },
@@ -34,7 +47,20 @@ export default defineEventHandler(async (event) => {
 			},
 		});
 
-		return formatResponse(true, null, "Register succesfull");
+		// LOGIN USER AFTER REGISTRATION
+		const loginResponse = await $fetch("/api/auth/login", {
+			method: "POST",
+			body: { email, password },
+		});
+
+		if (!loginResponse.success) {
+			return sendError(
+				event,
+				createError({ statusCode: 400, message: loginResponse.message })
+			);
+		}
+
+		return formatResponse(true, null, "Registred and loged in succesfully");
 	} catch (error) {
 		console.error("Registration error:", error);
 		return sendError(

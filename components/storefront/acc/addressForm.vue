@@ -1,20 +1,4 @@
 <script lang="ts" setup>
-	import * as yup from "yup";
-
-	const schema = yup.object({
-		firstName: yup.string().required("First Name is required"),
-		lastName: yup.string().required("Last Name is required"),
-		street: yup.string().required("Street is required"),
-		houseNumber: yup.string().required("House Number is required"),
-		zip: yup.string().required("ZIP is required"),
-		city: yup.string().required("City is required"),
-		country: yup.string().required("Country is required"),
-	});
-
-	const { handleSubmit, errors } = useForm({
-		validationSchema: schema,
-	});
-
 	const { value: firstName } = useField<string | undefined>("firstName");
 	const { value: lastName } = useField<string | undefined>("lastName");
 	const { value: street } = useField<string | undefined>("street");
@@ -22,10 +6,6 @@
 	const { value: zip } = useField<string | undefined>("zip");
 	const { value: city } = useField<string | undefined>("city");
 	const { value: country } = useField<string | undefined>("country");
-
-	const onSubmit = handleSubmit((values) => {
-		console.log("Form Submitted", values);
-	});
 </script>
 
 <template>

@@ -1,4 +1,10 @@
 <script lang="ts" setup>
+	import { loginSchema } from "~/utils/schemas/loginSchema";
+	import { registerSchema } from "~/utils/schemas/registerSchema";
+	import type { LocationQueryValue } from "vue-router";
+
+	const { addNotification } = useNotification();
+
 	const route = useRoute();
 	const router = useRouter();
 	const { setUser } = useUser();
@@ -10,68 +16,74 @@
 	let auth = reactive({
 		email: "",
 		password: "",
-		passwordAgain: "", // For registration
+		passwordAgain: "",
 	});
-	const status = ref<string | null>(null); // Message to show for success or error
-	const isError = ref(false); // To track if it's an error message
+	let errors = reactive({
+		email: "",
+		password: "",
+		passwordAgain: "",
+	});
 
 	watch(
 		() => route.query.isRegister,
-		(newVal) => {
+		(newVal: LocationQueryValue | LocationQueryValue[]) => {
 			isRegister.value = newVal === "true";
 		}
 	);
 
 	const handleSubmit = async () => {
-		status.value = null; // Reset status before a new request
-		isError.value = false; // Reset error flag
+		errors.email = "";
+		errors.password = "";
+		errors.passwordAgain = "";
 
-		if (isRegister.value) {
-			// Registration flow
-			try {
-				const { data, error } = await useFetch("/api/auth/register", {
-					method: "POST",
-					body: JSON.stringify({ email: auth.email, password: auth.password }),
-				});
+		if (isRegister.value === true && auth.password != auth.passwordAgain) {
+			errors.passwordAgain = "Passwords do not match";
+			return;
+		}
 
-				if (error.value) {
-					status.value = error.value?.message ?? "Registration failed";
-					isError.value = true;
-					return;
-				}
+		const result = isRegister.value
+			? await registerSchema.safeParseAsync(auth)
+			: loginSchema.safeParse(auth);
 
-				status.value = data.value?.message ?? "Registration successful!";
-				await router.push(redirectTo as string);
-			} catch (e) {
-				status.value = "An error occurred during registration.";
-				isError.value = true;
+		if (!result.success) {
+			result.error.errors.forEach((err) => {
+				const field = err.path[0] as keyof typeof errors;
+				errors[field] = err.message;
+			});
+			return;
+		}
+
+		try {
+			const endpoint = isRegister.value
+				? "/api/auth/register"
+				: "/api/auth/login";
+
+			// Create the body based on the authentication type
+			const body = isRegister.value
+				? {
+						email: auth.email,
+						password: auth.password,
+						passwordAgain: auth.passwordAgain,
+					}
+				: { email: auth.email, password: auth.password };
+
+			// Fetch data from the API
+			const { data, error } = await useFetch(endpoint, {
+				method: "POST",
+				body: body,
+			});
+
+			if (error.value) {
+				addNotification(error.value.message, "error", 5000);
+				return;
 			}
-		} else {
-			// Login flow
-			try {
-				const { data, error } = await useFetch("/api/auth/login", {
-					method: "POST",
-					body: JSON.stringify({ email: auth.email, password: auth.password }),
-				});
 
-				if (error.value) {
-					status.value = error.value?.message ?? "Login failed";
-					isError.value = true;
-					return;
-				}
-				if (data.value?.data) {
-					setUser(data.value.data);
-				} else {
-					status.value = "Failed to retrieve user data.";
-					isError.value = true;
-				}
-
-				status.value = data.value?.message ?? "Login successful!";
+			if (data.value) {
+				addNotification(data.value?.message || "Success", "success", 5000);
 				await router.push(redirectTo as string);
-			} catch (e) {
-				status.value = "An error occurred during login.";
-				isError.value = true;
 			}
+		} catch (e) {
+			errors.email = "An error occurred during submission";
 		}
 	};
 </script>
@@ -89,13 +101,13 @@
 						v-model="auth.email"
 						label="Email"
 						type="email"
-						required
+						:error="errors.email"
 					/>
 					<StorefrontInput
 						v-model="auth.password"
 						label="Password"
 						type="password"
-						required
+						:error="errors.password"
 					/>
 
 					<StorefrontInput
@@ -103,7 +115,7 @@
 						v-model="auth.passwordAgain"
 						label="Confirm Password"
 						type="password"
-						required
+						:error="errors.passwordAgain"
 					/>
 
 					<span class="text-center text-storefront-special" v-if="!isRegister">
@@ -112,15 +124,6 @@
 							:to="{ query: { isRegister: 'true' } }"
 							>Forget password?</NuxtLink
 						>
-					</span>
-
-					<!-- Show status message -->
-					<span
-						v-if="status"
-						:class="isError ? 'text-red-600' : 'text-green-600'"
-						class="mt-4 text-center"
-					>
-						{{ status }}
 					</span>
 
 					<button
@@ -134,7 +137,7 @@
 							Don't have an account?
 							<NuxtLink
 								class="text-storefront-special underline"
-								:to="{ query: { isRegister: 'true' } }"
+								:to="{ query: { ...route.query, isRegister: 'true' } }"
 								>Register</NuxtLink
 							>
 						</span>
@@ -142,7 +145,7 @@
 							Already have an account?
 							<NuxtLink
 								class="text-storefront-special underline"
-								:to="{ query: { isRegister: 'false' } }"
+								:to="{ query: { ...route.query, isRegister: 'false' } }"
 								>Login</NuxtLink
 							>
 						</span>
