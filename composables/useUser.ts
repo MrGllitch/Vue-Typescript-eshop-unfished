@@ -1,4 +1,6 @@
 export const useUser = () => {
+	const { addNotification } = useNotification();
+
 	const user = useState<User | null>("user", () => null);
 
 	const setUser = (userData: User) => {
@@ -12,6 +14,7 @@ export const useUser = () => {
 			path: "/auth",
 			query: { message: "loged out" },
 		});
+		addNotification("Logged out","info",3000)
 	};
 
 	const isLoggedIn = (user: User | null) => {
