@@ -1,9 +1,8 @@
 import prisma from "~/lib/prisma";
 import bcrypt from "bcrypt";
-import { randomBytes } from "crypto";
 import { formatResponse } from "~/utils/responseFormatter";
-import { setSessionCookie } from "~/utils/setSessionCookie";
 import { loginSchema } from "~/utils/schemas/loginSchema";
+import { loginUser } from "~/server/functions/loginUser";
 
 export default defineEventHandler(async (event) => {
 	const { email, password } = await readBody(event);
@@ -39,18 +38,7 @@ export default defineEventHandler(async (event) => {
 			);
 		}
 
-		const token = randomBytes(32).toString("hex");
-		const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
-		await prisma.session.create({
-			data: {
-				userId: user.id,
-				sessionToken: token,
-				expires,
-			},
-		});
-
-		setSessionCookie(event, token, expires);
+		await loginUser(user.id, event);
 
 		return formatResponse(
 			true,

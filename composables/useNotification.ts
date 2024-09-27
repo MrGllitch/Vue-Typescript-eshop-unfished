@@ -8,7 +8,6 @@ export const useNotification = () => {
 		type: "success" | "error" | "info" = "info",
 		duration = 3000
 	) => {
-		console.log("creating");
 		const notification: Notification = {
 			message,
 			type,

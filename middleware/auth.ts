@@ -19,13 +19,13 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		const { data } = await useFetch("/api/auth/validate-token", {});
 
 		if (!data.value?.success) {
-			addNotification(data.value?.message || "Error", "error");
+			//addNotification(data.value?.message || "Error", "error");
+			console.log(data.value?.message || "Error");
 
 			return navigateTo({
 				path: "/auth",
 				query: { redirect: to.fullPath },
 			});
-			
 		}
 
 		if (data.value.data) {

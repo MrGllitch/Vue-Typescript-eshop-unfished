@@ -12,9 +12,8 @@ export const useUser = () => {
 		user.value = null;
 		await navigateTo({
 			path: "/auth",
-			query: { message: "loged out" },
 		});
-		addNotification("Logged out","info",3000)
+		addNotification("Logged out", "info", 3000);
 	};
 
 	const isLoggedIn = (user: User | null) => {

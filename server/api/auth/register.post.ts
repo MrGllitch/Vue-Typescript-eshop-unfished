@@ -2,6 +2,7 @@ import prisma from "~/lib/prisma";
 import bcrypt from "bcrypt";
 import { formatResponse } from "~/utils/responseFormatter";
 import { registerSchema } from "~/utils/schemas/registerSchema";
+import { loginUser } from "~/server/functions/loginUser";
 
 export default defineEventHandler(async (event) => {
 	try {
@@ -48,17 +49,7 @@ export default defineEventHandler(async (event) => {
 		});
 
 		// LOGIN USER AFTER REGISTRATION
-		const loginResponse = await $fetch("/api/auth/login", {
-			method: "POST",
-			body: { email, password },
-		});
-
-		if (!loginResponse.success) {
-			return sendError(
-				event,
-				createError({ statusCode: 400, message: loginResponse.message })
-			);
-		}
+		await loginUser(newUser.id, event);
 
 		return formatResponse(true, null, "Registred and loged in succesfully");
 	} catch (error) {

@@ -1,12 +1,6 @@
 <script setup>
 	const { notifications, removeNotification } = useNotification();
-	watch(
-		notifications,
-		(newVal, oldVal) => {
-			console.log("Notifications updated:", newVal);
-		},
-		{ deep: true, immediate: true }
-	);
+
 </script>
 
 <template>
