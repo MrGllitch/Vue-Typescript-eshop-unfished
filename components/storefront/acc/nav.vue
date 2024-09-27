@@ -6,13 +6,22 @@
 		{ path: "settings", name: "Settings", icon: "mi-settings" },
 		{ path: "logout", name: "logout", icon: "mi-log-out" },
 	];
+
+	const { user } = useUser();
 </script>
 <template>
-	<StorefrontAccNavButton
+	<nav class="flex flex-col">
+		<h2 v-if="user">
+			{{ user.id }}
+		</h2>
+		<StorefrontAccNavButton
 		v-for="route in routes"
 		:path="route.path"
 		:icon="route.icon"
 		:name="route.name"
 	>
 	</StorefrontAccNavButton>
+	</nav>
+	
+
 </template>

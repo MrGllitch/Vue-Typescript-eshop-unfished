@@ -1,13 +1,9 @@
-<template>
-  <div>
-    
-  </div>
-</template>
-
 <script lang="ts" setup>
-
+  const {cartItems, removeItem} = useCart()
 </script>
 
-<style>
-
-</style>
+<template>
+  <div v-for="item in cartItems">
+    {{ item.productId }}
+  </div>
+</template>

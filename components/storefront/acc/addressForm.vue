@@ -1,14 +1,9 @@
 <script lang="ts" setup>
-	const { value: firstName } = useField<string | undefined>("firstName");
-	const { value: lastName } = useField<string | undefined>("lastName");
-	const { value: street } = useField<string | undefined>("street");
-	const { value: houseNumber } = useField<string | undefined>("houseNumber");
-	const { value: zip } = useField<string | undefined>("zip");
-	const { value: city } = useField<string | undefined>("city");
-	const { value: country } = useField<string | undefined>("country");
+
 </script>
 
 <template>
+	<!-- 
 	<form @submit="onSubmit">
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 			<StorefrontInput
@@ -37,4 +32,5 @@
 		</div>
 		<button type="submit">Submit</button>
 	</form>
+	 -->
 </template>
