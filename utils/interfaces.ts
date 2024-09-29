@@ -65,9 +65,3 @@ export interface Address {
 	city: string;
 	country: string;
 }
-
-export interface CartItem{
-	productId: number;
-	quantity: number;
-
-}

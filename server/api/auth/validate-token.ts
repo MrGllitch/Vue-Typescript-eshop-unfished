@@ -1,6 +1,6 @@
 import prisma from "~/lib/prisma";
+import { loginUser } from "~/server/functions/loginUser";
 import { formatResponse } from "~/utils/responseFormatter";
-import { setSessionCookie } from "~/utils/setSessionCookie";
 
 export default defineEventHandler(async (event) => {
 	const token = getCookie(event, "session_token");
@@ -25,16 +25,8 @@ export default defineEventHandler(async (event) => {
 		}
 		//todo other checks
 
-		const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
-		await prisma.session.update({
-			where: { sessionToken: token },
-			data: {
-				expires,
-			},
-		});
-
-		setSessionCookie(event, token, expires);
+		//todo probably dont renew token when expire is to far
+		await loginUser(user_session.user.id, event, token);
 
 		return formatResponse(
 			true,

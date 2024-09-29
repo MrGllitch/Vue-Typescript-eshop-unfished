@@ -1,34 +1,35 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-								compatibilityDate: "2024-04-03",
-								experimental: {
-																renderJsonPayloads: false,
-								},
-								supabase: {
-																redirect: false,
-								},
-								modules: [
-																"@prisma/nuxt",
-																"@nuxtjs/tailwindcss",
-																"@primevue/nuxt-module",
-																"nuxt-svgo",
-																"@vee-validate/nuxt",
-																"@nuxtjs/supabase",
-								],
-								prisma: {
-																installStudio: false,
-																generateClient: false,
-								},
-								css: ["mono-icons/iconfont/icons.css"],
-								primevue: {
-																options: {
-																								unstyled: true,
+																compatibilityDate: "2024-04-03",
+																experimental: {
+																																renderJsonPayloads: false,
 																},
-								},
-								svgo: {
-																autoImportPath: false,
-								},
-								devtools: {
-																enabled: true,
-								},
+																supabase: {
+																																redirect: false,
+																},
+																modules: [
+																  "@prisma/nuxt",
+																  "@nuxtjs/tailwindcss",
+																  "@primevue/nuxt-module",
+																  "nuxt-svgo",
+																  "@vee-validate/nuxt",
+																  "@nuxtjs/supabase",
+																  "@nuxt/image",
+																],
+																prisma: {
+																																installStudio: false,
+																																generateClient: false,
+																},
+																css: ["mono-icons/iconfont/icons.css"],
+																primevue: {
+																																options: {
+																																																unstyled: true,
+																																},
+																},
+																svgo: {
+																																autoImportPath: false,
+																},
+																devtools: {
+																																enabled: true,
+																},
 });

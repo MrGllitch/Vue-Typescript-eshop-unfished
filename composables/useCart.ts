@@ -1,38 +1,62 @@
-import type { OrderItem } from "@prisma/client";
-import type { CartItem, Notification } from "~/utils/interfaces";
-
+import type { CartItem, OrderItem, Product } from "@prisma/client";
 export const useCart = () => {
-	const cartItems = useState<CartItem[]>("cart_items", () => []);
+	const { addNotification } = useNotification();
 
-  function addItem (productId: number) : boolean{
-    //todo check if there is enought products
-    //todo check if not reserved
+	const cartItems = useState<Product[]>("cart_items", () => []);
 
-  const exists = cartItems.value.find((item) => item.productId === productId)
-  if(exists !== undefined){
-    cartItems.value.push(exists)
-  }else{
-    cartItems.value.push({productId: productId,quantity: 1})
+	async function addItem(productId: number): Promise<boolean> {
+		const response = await $fetch<{
+			data: null;
+			message?: string;
+			success: boolean;
+		}>("/api/cart/addItem", {
+			method: "post",
+			body: { productId: productId },
+		});
+		addNotification(
+			response.message ?? "No message provided",
+			response.success ? "success" : "error"
+		);
 
-  }
+		updateCart();
 
-    return true
-  }
+		//frontend
+		//todo check if there is enought products
+		//todo check if not reserved
 
-  function removeItem(cartItem: CartItem){
-    const index = cartItems.value.indexOf(cartItem);
-    if (index !== -1) {
-      cartItems.value.splice(index, 1);
-    } 
-  }
+		return true;
+	}
 
-  function updateCart(){
-    
-  }
+	async function removeItem(productId: number) {
+		const response = await $fetch<{
+			data: null;
+			message?: string;
+			success: boolean;
+		}>("/api/cart/removeItem", {
+			method: "post",
+			body: { productId: productId },
+		});
+		addNotification(
+			response.message ?? "No message provided",
+			response.success ? "success" : "error"
+		);
+
+		updateCart();
+	}
+
+	async function updateCart() {
+		const dbCartItems = await $fetch("/api/cart/items", { method: "get" });
+		cartItems.value = dbCartItems.map((item) => ({
+			...item,
+			createdAt: new Date(item.createdAt),
+			updatedAt: new Date(item.updatedAt),
+		}));
+	}
 
 	return {
 		cartItems,
-    addItem,
-    removeItem,
+		addItem,
+		removeItem,
+		updateCart,
 	};
 };

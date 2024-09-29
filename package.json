@@ -25,6 +25,7 @@
 	},
 	"devDependencies": {
 		"@nuxt/devtools": "1.4.2",
+		"@nuxt/image": "^1.8.0",
 		"@nuxtjs/supabase": "^1.4.0",
 		"@nuxtjs/tailwindcss": "^6.12.1",
 		"@primevue/nuxt-module": "^4.0.7",

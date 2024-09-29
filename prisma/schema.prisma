@@ -70,6 +70,7 @@ model Account {
   bAddress     BillingAddress?      @relation(fields: [bAddressId], references: [id])
   contact      Contact?             @relation(fields: [contactId], references: [id])
   orders       Order[]
+  cart         Cart?
   reservations ProductReservation[]
   sessions     Session[]
 }
@@ -126,17 +127,19 @@ model Locality {
 }
 
 model Cart {
-  id Int @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   cartItems CartItem[]
-
+  account   Account    @relation(fields: [accountId], references: [id])
+  accountId String     @unique @db.Uuid
 }
 
-model CartItem{
-  id Int @id @default(autoincrement())
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  cartId    Int
+  product   Product @relation(fields: [productId], references: [id])
   productId Int
-  quantity Int
-  author   Cart @relation(fields: [authorId], references: [id])
-  authorId Int
 }
 
 model Product {
@@ -164,6 +167,7 @@ model Product {
   locality       Locality             @relation(fields: [localityId], references: [id])
   orderItems     OrderItem[]
   reservations   ProductReservation[]
+  CartItem       CartItem[]
 }
 
 model OrderItem {
