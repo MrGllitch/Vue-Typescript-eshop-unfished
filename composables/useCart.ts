@@ -26,6 +26,10 @@ export const useCart = () => {
     } 
   }
 
+  function updateCart(){
+    
+  }
+
 	return {
 		cartItems,
     addItem,

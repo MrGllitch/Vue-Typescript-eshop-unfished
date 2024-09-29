@@ -125,6 +125,20 @@ model Locality {
   products Product[]
 }
 
+model Cart {
+  id Int @id @default(autoincrement())
+  cartItems CartItem[]
+
+}
+
+model CartItem{
+  id Int @id @default(autoincrement())
+  productId Int
+  quantity Int
+  author   Cart @relation(fields: [authorId], references: [id])
+  authorId Int
+}
+
 model Product {
   id               Int            @id @default(autoincrement())
   nameCz           String
