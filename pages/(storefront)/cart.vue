@@ -12,4 +12,10 @@
 		<div>{{ item.nameCz }}</div>
 		<button v-on:click="removeItem(item.id)">Remove</button>
 	</div>
+
+	<div>
+		<button>
+			to checkout
+		</button>
+	</div>
 </template>

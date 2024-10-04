@@ -46,5 +46,5 @@ export default defineEventHandler(async (event) => {
 
 	const productList = items.map((item) => item.product);
 
-	return productList || [];
+	return productList;
 });
