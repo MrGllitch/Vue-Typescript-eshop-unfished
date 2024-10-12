@@ -11,10 +11,10 @@ function changeState() {
 </script>
 
 <template>
-  <div>
+  <div class="my-4">
     <button
       @click="changeState"
-      class="border-b w-full flex flex-row justify-between content-center"
+      class="border-b w-full flex flex-row justify-between content-center font-bold text-xl"
     >
       {{ header }}
       <i
@@ -26,7 +26,7 @@ function changeState() {
       />
     </button>
     <div
-      class="origin-top transform transition"
+      class="origin-top transform transition text-xl"
       :class="{
         'scale-y-0': !isOpen,
         'scale-y-100': isOpen,
