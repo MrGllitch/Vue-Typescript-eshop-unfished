@@ -1,35 +1,27 @@
-<script setup lang="ts">
-interface ServiceCategory {
-	id: string;
-	name: string;
-	description?: string;
-	icon?: string;
-	color?: string;
-}
-
-interface Props {
-	categories?: ServiceCategory[];
-	selectedCategory?: string;
-	showBackButton?: boolean;
-	columns?: number;
-}
-
-interface Emits {
-	(e: 'select-category', category: ServiceCategory): void;
-	(e: 'back'): void;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-	categories: () => [],
-	selectedCategory: '',
-	showBackButton: true,
-	columns: 3
+<script setup>
+const props = defineProps({
+	categories: {
+		type: Array,
+		default: () => []
+	},
+	selectedCategory: {
+		type: String,
+		default: ''
+	},
+	showBackButton: {
+		type: Boolean,
+		default: true
+	},
+	columns: {
+		type: Number,
+		default: 3
+	}
 });
 
-const emit = defineEmits<Emits>();
+const emit = defineEmits(['select-category', 'back']);
 
 // Default service categories
-const defaultCategories: ServiceCategory[] = [
+const defaultCategories = [
 	{
 		id: 'minerals',
 		name: 'Minerals',
@@ -89,7 +81,7 @@ const defaultCategories: ServiceCategory[] = [
 const categoriesToDisplay = computed(() => props.categories.length > 0 ? props.categories : defaultCategories);
 
 // Handle category selection
-const selectCategory = (category: ServiceCategory) => {
+const selectCategory = (category) => {
 	emit('select-category', category);
 };
 
@@ -108,11 +100,11 @@ const gridClasses = computed(() => {
 		5: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5',
 		6: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6'
 	};
-	return colMap[props.columns as keyof typeof colMap] || 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+	return colMap[props.columns] || 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
 });
 
 // Get category card classes
-const getCategoryCardClasses = (category: ServiceCategory) => {
+const getCategoryCardClasses = (category) => {
 	const baseClasses = 'group relative overflow-hidden rounded-lg border-2 transition-all duration-300 cursor-pointer transform hover:scale-105 hover:shadow-lg';
 	const isSelected = props.selectedCategory === category.id;
 	
@@ -124,7 +116,7 @@ const getCategoryCardClasses = (category: ServiceCategory) => {
 };
 
 // Get category background classes
-const getCategoryBgClasses = (category: ServiceCategory) => {
+const getCategoryBgClasses = (category) => {
 	return category.color || 'bg-gray-500';
 };
 </script>

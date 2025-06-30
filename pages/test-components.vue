@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 // Test page for our new components
 const searchValue = ref('');
 const searchSuggestions = ref([
@@ -11,7 +11,7 @@ const selectedRegion = ref('');
 const selectedCategory = ref('');
 
 // Handle search
-const handleSearch = (value: string) => {
+const handleSearch = (value) => {
 	console.log('Searching for:', value);
 	isLoading.value = true;
 	setTimeout(() => {
@@ -20,18 +20,18 @@ const handleSearch = (value: string) => {
 };
 
 // Handle suggestion selection
-const handleSuggestionSelect = (suggestion: any) => {
+const handleSuggestionSelect = (suggestion) => {
 	console.log('Selected suggestion:', suggestion);
 };
 
 // Handle region selection
-const handleRegionSelect = (region: any) => {
+const handleRegionSelect = (region) => {
 	console.log('Selected region:', region);
 	selectedRegion.value = region.id;
 };
 
 // Handle category selection
-const handleCategorySelect = (category: any) => {
+const handleCategorySelect = (category) => {
 	console.log('Selected category:', category);
 	selectedCategory.value = category.id;
 };

@@ -1,16 +1,23 @@
-<script setup lang="ts">
-interface Props {
-	size?: 'sm' | 'md' | 'lg';
-	color?: string;
-	thickness?: number;
-	speed?: 'slow' | 'normal' | 'fast';
-}
-
-const props = withDefaults(defineProps<Props>(), {
-	size: 'md',
-	color: '#3b82f6',
-	thickness: 4,
-	speed: 'normal'
+<script setup>
+const props = defineProps({
+	size: {
+		type: String,
+		default: 'md',
+		validator: (value) => ['sm', 'md', 'lg'].includes(value)
+	},
+	color: {
+		type: String,
+		default: '#3b82f6'
+	},
+	thickness: {
+		type: Number,
+		default: 4
+	},
+	speed: {
+		type: String,
+		default: 'normal',
+		validator: (value) => ['slow', 'normal', 'fast'].includes(value)
+	}
 });
 
 // Size mapping

@@ -1,33 +1,26 @@
-<script setup lang="ts">
-interface SearchSuggestion {
-	id: string;
-	name: string;
-	category?: string;
-}
-
-interface Props {
-	placeholder?: string;
-	suggestions?: SearchSuggestion[];
-	loading?: boolean;
-	modelValue?: string;
-}
-
-interface Emits {
-	(e: 'update:modelValue', value: string): void;
-	(e: 'search', value: string): void;
-	(e: 'select', suggestion: SearchSuggestion): void;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-	placeholder: 'Search...',
-	suggestions: () => [],
-	loading: false,
-	modelValue: ''
+<script setup>
+const props = defineProps({
+	placeholder: {
+		type: String,
+		default: 'Search...'
+	},
+	suggestions: {
+		type: Array,
+		default: () => []
+	},
+	loading: {
+		type: Boolean,
+		default: false
+	},
+	modelValue: {
+		type: String,
+		default: ''
+	}
 });
 
-const emit = defineEmits<Emits>();
+const emit = defineEmits(['update:modelValue', 'search', 'select']);
 
-const searchInput = ref<HTMLInputElement>();
+const searchInput = ref();
 const showSuggestions = ref(false);
 const searchValue = ref(props.modelValue);
 
@@ -37,8 +30,8 @@ watch(() => props.modelValue, (newValue) => {
 });
 
 // Handle input changes
-const handleInput = (event: Event) => {
-	const target = event.target as HTMLInputElement;
+const handleInput = (event) => {
+	const target = event.target;
 	searchValue.value = target.value;
 	emit('update:modelValue', target.value);
 	showSuggestions.value = target.value.length > 0 && props.suggestions.length > 0;
@@ -51,7 +44,7 @@ const handleSearch = () => {
 };
 
 // Handle suggestion selection
-const selectSuggestion = (suggestion: SearchSuggestion) => {
+const selectSuggestion = (suggestion) => {
 	searchValue.value = suggestion.name;
 	emit('update:modelValue', suggestion.name);
 	emit('select', suggestion);
@@ -60,7 +53,7 @@ const selectSuggestion = (suggestion: SearchSuggestion) => {
 };
 
 // Handle key events
-const handleKeydown = (event: KeyboardEvent) => {
+const handleKeydown = (event) => {
 	if (event.key === 'Enter') {
 		handleSearch();
 	} else if (event.key === 'Escape') {

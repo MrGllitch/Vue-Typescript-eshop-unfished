@@ -1,36 +1,27 @@
-<script setup lang="ts">
-interface Region {
-	id: string;
-	name: string;
-	path: string;
-	center?: { x: number; y: number };
-}
-
-interface Props {
-	regions?: Region[];
-	selectedRegion?: string;
-	showBackButton?: boolean;
-}
-
-interface Emits {
-	(e: 'select-region', region: Region): void;
-	(e: 'back'): void;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-	regions: () => [],
-	selectedRegion: '',
-	showBackButton: true
+<script setup>
+const props = defineProps({
+	regions: {
+		type: Array,
+		default: () => []
+	},
+	selectedRegion: {
+		type: String,
+		default: ''
+	},
+	showBackButton: {
+		type: Boolean,
+		default: true
+	}
 });
 
-const emit = defineEmits<Emits>();
+const emit = defineEmits(['select-region', 'back']);
 
-const hoveredRegion = ref<string>('');
+const hoveredRegion = ref('');
 const tooltipPosition = ref({ x: 0, y: 0 });
 const showTooltip = ref(false);
 
 // Default Czech Republic regions (simplified paths for demonstration)
-const defaultRegions: Region[] = [
+const defaultRegions = [
 	{
 		id: 'prague',
 		name: 'Praha',
@@ -120,18 +111,18 @@ const defaultRegions: Region[] = [
 const regionsToDisplay = computed(() => props.regions.length > 0 ? props.regions : defaultRegions);
 
 // Handle region selection
-const selectRegion = (region: Region) => {
+const selectRegion = (region) => {
 	emit('select-region', region);
 };
 
 // Handle region hover
-const handleMouseEnter = (event: MouseEvent, region: Region) => {
+const handleMouseEnter = (event, region) => {
 	hoveredRegion.value = region.id;
 	updateTooltipPosition(event);
 	showTooltip.value = true;
 };
 
-const handleMouseMove = (event: MouseEvent) => {
+const handleMouseMove = (event) => {
 	if (hoveredRegion.value) {
 		updateTooltipPosition(event);
 	}
@@ -143,7 +134,7 @@ const handleMouseLeave = () => {
 };
 
 // Update tooltip position
-const updateTooltipPosition = (event: MouseEvent) => {
+const updateTooltipPosition = (event) => {
 	tooltipPosition.value = {
 		x: event.clientX + 10,
 		y: event.clientY - 10
@@ -156,7 +147,7 @@ const handleBack = () => {
 };
 
 // Get region class for styling
-const getRegionClass = (region: Region) => {
+const getRegionClass = (region) => {
 	const baseClass = 'transition-all duration-200 cursor-pointer stroke-2';
 	const isSelected = props.selectedRegion === region.id;
 	const isHovered = hoveredRegion.value === region.id;

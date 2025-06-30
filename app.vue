@@ -1,15 +1,8 @@
-<script setup lang="ts">
+<script setup>
 import Notification from "~/components/Notification.vue";
 import LoadingSpinner from "~/components/LoadingSpinner.vue";
 
 // Step management
-interface Step {
-	id: string;
-	name: string;
-	completed: boolean;
-	current: boolean;
-}
-
 // Application state
 const isLoading = ref(false);
 const hasError = ref(false);
@@ -18,7 +11,7 @@ const currentStep = ref(1);
 const totalSteps = ref(4);
 
 // Steps for the application flow
-const steps = ref<Step[]>([
+const steps = ref([
 	{ id: 'search', name: 'Search', completed: false, current: true },
 	{ id: 'region', name: 'Select Region', completed: false, current: false },
 	{ id: 'category', name: 'Choose Category', completed: false, current: false },
@@ -36,14 +29,14 @@ const stopLoading = () => {
 	isLoading.value = false;
 };
 
-const setError = (message: string) => {
+const setError = (message) => {
 	hasError.value = true;
 	errorMessage.value = message;
 	isLoading.value = false;
 };
 
 // Step navigation
-const goToStep = (stepNumber: number) => {
+const goToStep = (stepNumber) => {
 	if (stepNumber >= 1 && stepNumber <= totalSteps.value) {
 		currentStep.value = stepNumber;
 		updateSteps();
@@ -96,7 +89,7 @@ const appMethods = {
 provide('app', appMethods);
 
 // Handle global errors
-const handleError = (error: any) => {
+const handleError = (error) => {
 	console.error('Application error:', error);
 	setError(error?.message || 'An unexpected error occurred');
 };
